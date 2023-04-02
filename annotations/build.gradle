@@ -1,0 +1,14 @@
+plugins {
+    id "maven-publish"
+}
+
+apply plugin: "org.jetbrains.kotlin.multiplatform"
+
+kotlin {
+    ios()
+    macosX64()
+    jvm()
+    js(IR) {
+        nodejs()
+    }
+}

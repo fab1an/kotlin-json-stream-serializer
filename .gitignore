@@ -1,0 +1,7 @@
+/TODO.txt
+build
+.gradle
+.DS_Store
+.idea
+*.swp
+
