@@ -47,10 +47,9 @@ class CodeGenerationCollectionsTest {
             import com.fab1an.kotlinjsonstream.`value`
             import com.fab1an.kotlinjsonstream.nextList
             import kotlin.String
-            import kotlin.Unit
             import kotlin.collections.List
 
-            public fun JsonWriter.valueMyClass(obj: MyClass?): Unit {
+            public fun JsonWriter.valueMyClass(obj: MyClass?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -97,9 +96,8 @@ class CodeGenerationCollectionsTest {
 
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
-            import kotlin.Unit
             
-            public fun JsonWriter.valueMyObj(obj: MyObj?): Unit {
+            public fun JsonWriter.valueMyObj(obj: MyObj?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -154,10 +152,9 @@ class CodeGenerationCollectionsTest {
             import com.fab1an.kotlinjsonstream.`value`
             import com.fab1an.kotlinjsonstream.nextSet
             import kotlin.String
-            import kotlin.Unit
             import kotlin.collections.Set
 
-            public fun JsonWriter.valueMyClass(obj: MyClass?): Unit {
+            public fun JsonWriter.valueMyClass(obj: MyClass?) {
                 if (obj == null) {
                     nullValue()
                     return

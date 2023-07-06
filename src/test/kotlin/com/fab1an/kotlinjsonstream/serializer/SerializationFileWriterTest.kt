@@ -27,12 +27,13 @@ class SerializationFileWriterTest {
         Files.walk(tempDir).use { stream ->
             val pathList = stream.collect(Collectors.toList())
                 .filter { Files.isRegularFile(it) }
-                .map { tempDir.relativize(it).toString() }
+                .map { tempDir.relativize(it) }
+                .toSet()
 
-            pathList shouldEqual listOf(
-                "com/fab1an/kotlinjsonserializer/test/ASerialization.kt",
-                "com/fab1an/kotlinjsonserializer/test/BSerialization.kt",
-                "com/fab1an/kotlinjsonserializer/CSerialization.kt"
+            pathList shouldEqual setOf(
+                Paths.get("com/fab1an/kotlinjsonserializer/CSerialization.kt"),
+                Paths.get("com/fab1an/kotlinjsonserializer/test/ASerialization.kt"),
+                Paths.get("com/fab1an/kotlinjsonserializer/test/BSerialization.kt")
             )
         }
 
@@ -47,11 +48,12 @@ class SerializationFileWriterTest {
         Files.walk(tempDir).use { stream ->
             val pathList = stream.collect(Collectors.toList())
                 .filter { Files.isRegularFile(it) }
-                .map { tempDir.relativize(it).toString() }
+                .map { tempDir.relativize(it) }
+                .toSet()
 
-            pathList shouldEqual listOf(
-                "com/fab1an/kotlinjsonserializer/test/ASerialization.kt",
-                "com/fab1an/kotlinjsonserializer/CSerialization.kt"
+            pathList shouldEqual setOf(
+                Paths.get("com/fab1an/kotlinjsonserializer/test/ASerialization.kt"),
+                Paths.get("com/fab1an/kotlinjsonserializer/CSerialization.kt")
             )
         }
     }
@@ -72,11 +74,12 @@ class SerializationFileWriterTest {
         Files.walk(tempDir).use { stream ->
             val pathList = stream.collect(Collectors.toList())
                 .filter { Files.isRegularFile(it) }
-                .map { tempDir.relativize(it).toString() }
+                .map { tempDir.relativize(it) }
+                .toSet()
 
-            pathList shouldEqual listOf(
-                "com/fab1an/kotlinjsonserializer/CSerialization.kt",
-                "com/fab1an/kotlinjsonserializer/data/ASerialization.kt"
+            pathList shouldEqual setOf(
+                Paths.get("com/fab1an/kotlinjsonserializer/CSerialization.kt"),
+                Paths.get("com/fab1an/kotlinjsonserializer/data/ASerialization.kt")
             )
         }
 
@@ -91,11 +94,12 @@ class SerializationFileWriterTest {
         Files.walk(tempDir).use { stream ->
             val pathList = stream.collect(Collectors.toList())
                 .filter { Files.isRegularFile(it) }
-                .map { tempDir.relativize(it).toString() }
+                .map { tempDir.relativize(it) }
+                .toSet()
 
-            pathList shouldEqual listOf(
-                "com/fab1an/kotlinjsonserializer/CSerialization.kt",
-                "com/fab1an/kotlinjsonserializer/data/ASerialization.kt"
+            pathList shouldEqual setOf(
+                Paths.get("com/fab1an/kotlinjsonserializer/CSerialization.kt"),
+                Paths.get("com/fab1an/kotlinjsonserializer/data/ASerialization.kt")
             )
         }
     }

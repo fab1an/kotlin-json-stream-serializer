@@ -42,9 +42,8 @@ class CodeGenerationInheritanceTest {
 
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
-            import kotlin.Unit
             
-            public fun JsonWriter.valueMyInterface(obj: MyInterface?): Unit {
+            public fun JsonWriter.valueMyInterface(obj: MyInterface?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -130,9 +129,8 @@ class CodeGenerationInheritanceTest {
 
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
-            import kotlin.Unit
             
-            public fun JsonWriter.valueMyInterface(obj: MyInterface?): Unit {
+            public fun JsonWriter.valueMyInterface(obj: MyInterface?) {
                 if (obj == null) {
                     nullValue()
                     return

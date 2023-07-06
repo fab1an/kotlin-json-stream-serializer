@@ -42,9 +42,8 @@ class CodeGenerationCircularTest {
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
             import kotlin.Int
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyLeaf(obj: MyLeaf?): Unit {
+            public fun JsonWriter.valueMyLeaf(obj: MyLeaf?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -86,9 +85,8 @@ class CodeGenerationCircularTest {
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
             import com.fab1an.kotlinjsonstream.nextOrNull
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyRoot(obj: MyRoot?): Unit {
+            public fun JsonWriter.valueMyRoot(obj: MyRoot?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -163,9 +161,8 @@ class CodeGenerationCircularTest {
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
             import kotlin.Int
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyLeaf(obj: MyLeaf?): Unit {
+            public fun JsonWriter.valueMyLeaf(obj: MyLeaf?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -208,10 +205,9 @@ class CodeGenerationCircularTest {
             import com.fab1an.kotlinjsonstream.JsonWriter
             import com.fab1an.kotlinjsonstream.`value`
             import com.fab1an.kotlinjsonstream.nextList
-            import kotlin.Unit
             import kotlin.collections.List
 
-            public fun JsonWriter.valueMyRoot(obj: MyRoot?): Unit {
+            public fun JsonWriter.valueMyRoot(obj: MyRoot?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -283,9 +279,8 @@ class CodeGenerationCircularTest {
 
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyLeaf(obj: MyLeaf?): Unit {
+            public fun JsonWriter.valueMyLeaf(obj: MyLeaf?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -319,10 +314,9 @@ class CodeGenerationCircularTest {
             import com.fab1an.kotlinjsonstream.JsonWriter
             import com.fab1an.kotlinjsonstream.`value`
             import com.fab1an.kotlinjsonstream.nextSet
-            import kotlin.Unit
             import kotlin.collections.Set
 
-            public fun JsonWriter.valueMyRoot(obj: MyRoot?): Unit {
+            public fun JsonWriter.valueMyRoot(obj: MyRoot?) {
                 if (obj == null) {
                     nullValue()
                     return

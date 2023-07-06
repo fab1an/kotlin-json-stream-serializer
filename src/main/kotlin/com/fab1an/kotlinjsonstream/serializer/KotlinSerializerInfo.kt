@@ -3,12 +3,12 @@ package com.fab1an.kotlinjsonstream.serializer
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 
-internal data class KotlinSerializerInfo(
+data class KotlinSerializerInfo(
     val constructors: List<KotlinSerializerConstructorInfo> = emptyList(),
     val interfaces: List<KotlinSerializerInterfaceInfo> = emptyList()
 )
 
-internal data class KotlinSerializerConstructorInfo(
+data class KotlinSerializerConstructorInfo(
     val name: ClassName,
     val parameters: Map<String, KotlinSerializerParameter> = emptyMap(),
     val isEnum: Boolean = false
@@ -19,7 +19,7 @@ internal data class KotlinSerializerConstructorInfo(
     }
 }
 
-internal data class KotlinSerializerParameter(
+data class KotlinSerializerParameter(
     val typeName: ClassName,
     val isMarkedNullable: Boolean = false,
     val arguments: List<KotlinSerializerParameter> = emptyList(),
@@ -43,7 +43,7 @@ internal data class KotlinSerializerParameter(
         }
 }
 
-internal data class KotlinSerializerInterfaceInfo(
+data class KotlinSerializerInterfaceInfo(
     val name: ClassName,
     val implementations: List<ClassName>,
     val commonNeededParentRef: ClassName?

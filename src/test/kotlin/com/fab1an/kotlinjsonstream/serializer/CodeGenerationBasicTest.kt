@@ -36,9 +36,8 @@ class CodeGenerationBasicTest {
             import kotlin.Boolean
             import kotlin.Int
             import kotlin.String
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyClass(obj: MyClass?): Unit {
+            public fun JsonWriter.valueMyClass(obj: MyClass?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -113,9 +112,8 @@ class CodeGenerationBasicTest {
             import com.fab1an.kotlinjsonstream.JsonWriter
             import com.fab1an.kotlinjsonstream.nextOrNull
             import kotlin.Int
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyClass(obj: MyClass?): Unit {
+            public fun JsonWriter.valueMyClass(obj: MyClass?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -165,9 +163,8 @@ class CodeGenerationBasicTest {
 
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyEnum(obj: MyEnum?): Unit {
+            public fun JsonWriter.valueMyEnum(obj: MyEnum?) {
                 if (obj == null) {
                     nullValue()
                     return
@@ -209,9 +206,8 @@ class CodeGenerationBasicTest {
             import com.example.packageB.valueMyHoldee
             import com.fab1an.kotlinjsonstream.JsonReader
             import com.fab1an.kotlinjsonstream.JsonWriter
-            import kotlin.Unit
 
-            public fun JsonWriter.valueMyHolder(obj: MyHolder?): Unit {
+            public fun JsonWriter.valueMyHolder(obj: MyHolder?) {
                 if (obj == null) {
                     nullValue()
                     return

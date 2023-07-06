@@ -11,7 +11,7 @@ import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.asClassName
 
 
-internal class CodeGenerator {
+class CodeGenerator {
 
     fun createSerializationFileSpecs(serializerInfo: KotlinSerializerInfo): List<FileSpec> {
         val files = mutableListOf<FileSpec>()

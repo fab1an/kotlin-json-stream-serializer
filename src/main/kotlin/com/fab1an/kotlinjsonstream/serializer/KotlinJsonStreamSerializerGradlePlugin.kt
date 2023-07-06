@@ -8,7 +8,7 @@ import java.nio.file.Paths
 
 class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
 
-    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.0.0"
+    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.0.1-SNAPSHOT"
     private val kotlinStreamSerializerAnnotationDependency =
         "com.fab1an:kotlin-json-stream-serializer-annotations:1.0.0-SNAPSHOT"
     private val okioDependency = "com.squareup.okio:okio:3.3.0"
