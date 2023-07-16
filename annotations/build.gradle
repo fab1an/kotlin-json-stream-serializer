@@ -5,9 +5,17 @@ plugins {
 apply plugin: "org.jetbrains.kotlin.multiplatform"
 
 kotlin {
+    targetHierarchy.default()
+    mingwX64()
     ios()
+    macosArm64()
     macosX64()
-    jvm()
+    linuxX64()
+    jvm {
+        compilations.main {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+    }
     js(IR) {
         nodejs()
     }
