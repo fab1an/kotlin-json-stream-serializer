@@ -8,10 +8,9 @@ import java.nio.file.Paths
 
 class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
 
-    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.0.1-SNAPSHOT"
+    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.1.1-SNAPSHOT"
     private val kotlinStreamSerializerAnnotationDependency =
         "com.fab1an:kotlin-json-stream-serializer-annotations:1.0.0-SNAPSHOT"
-    private val okioDependency = "com.squareup.okio:okio:3.3.0"
 
     override fun apply(project: Project) {
 
@@ -24,7 +23,6 @@ class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
                     sourceSet.dependencies {
                         implementation(kotlinJsonStreamDependency)
                         implementation(kotlinStreamSerializerAnnotationDependency)
-                        implementation(okioDependency)
                     }
                 }
                 configureSourceSet(project, sourceSet)
@@ -40,7 +38,6 @@ class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
                     sourceSet.dependencies {
                         implementation(kotlinJsonStreamDependency)
                         implementation(kotlinStreamSerializerAnnotationDependency)
-                        implementation(okioDependency)
                     }
                 }
                 configureSourceSet(project, sourceSet)
