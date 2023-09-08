@@ -11,6 +11,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
     }
 }
 
@@ -21,7 +22,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin-api"
     implementation "com.github.cretz.kastree:kastree-ast-psi:0.4.0"
     implementation "com.squareup:kotlinpoet:1.14.2"
-    implementation "com.fab1an:kotlin-json-stream:1.1.0"
+    implementation "com.fab1an:kotlin-json-stream:1.1.1"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
 }
