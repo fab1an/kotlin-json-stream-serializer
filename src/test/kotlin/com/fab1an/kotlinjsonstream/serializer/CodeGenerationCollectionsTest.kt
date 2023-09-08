@@ -1,5 +1,7 @@
 package com.fab1an.kotlinjsonstream.serializer
 
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerCollectionParameter
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import org.junit.jupiter.api.Test
@@ -13,21 +15,19 @@ class CodeGenerationCollectionsTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyClass"),
                     parameters = mapOf(
-                        "stringList" to KotlinSerializerParameter(
+                        "stringList" to KotlinSerializerCollectionParameter(
                             typeName = List::class.asClassName(),
-                            arguments = listOf(
-                                KotlinSerializerParameter(
-                                    typeName = String::class.asClassName()
-                                )
+                            argument = KotlinSerializerStandardParameter(
+                                typeName = String::class.asClassName()
                             )
+
                         ),
-                        "objList" to KotlinSerializerParameter(
+                        "objList" to KotlinSerializerCollectionParameter(
                             typeName = List::class.asClassName(),
-                            arguments = listOf(
-                                KotlinSerializerParameter(
-                                    typeName = ClassName("com.example", "MyObj")
-                                )
+                            argument = KotlinSerializerStandardParameter(
+                                typeName = ClassName("com.example", "MyObj")
                             )
+
                         )
                     )
                 ),
@@ -129,13 +129,12 @@ class CodeGenerationCollectionsTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyClass"),
                     parameters = mapOf(
-                        "stringSet" to KotlinSerializerParameter(
+                        "stringSet" to KotlinSerializerCollectionParameter(
                             typeName = Set::class.asClassName(),
-                            arguments = listOf(
-                                KotlinSerializerParameter(
-                                    typeName = String::class.asClassName()
-                                )
+                            argument = KotlinSerializerStandardParameter(
+                                typeName = String::class.asClassName()
                             )
+
                         )
                     )
                 )

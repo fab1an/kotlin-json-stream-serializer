@@ -1,5 +1,6 @@
 package com.fab1an.kotlinjsonstream.serializer
 
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import org.junit.jupiter.api.Test
@@ -12,15 +13,15 @@ class CodeGenerationBasicTest {
         val info = KotlinSerializerInfo(
             constructors = listOf(
                 KotlinSerializerConstructorInfo(
-                    name = ClassName("com.example","MyClass"),
+                    name = ClassName("com.example", "MyClass"),
                     parameters = mapOf(
-                        "intField" to KotlinSerializerParameter(
+                        "intField" to KotlinSerializerStandardParameter(
                             typeName = Int::class.asClassName()
                         ),
-                        "boolField" to KotlinSerializerParameter(
+                        "boolField" to KotlinSerializerStandardParameter(
                             typeName = Boolean::class.asClassName()
                         ),
-                        "stringField" to KotlinSerializerParameter(
+                        "stringField" to KotlinSerializerStandardParameter(
                             typeName = String::class.asClassName()
                         )
                     )
@@ -94,9 +95,9 @@ class CodeGenerationBasicTest {
         val info = KotlinSerializerInfo(
             constructors = listOf(
                 KotlinSerializerConstructorInfo(
-                    name = ClassName("com.example","MyClass"),
+                    name = ClassName("com.example", "MyClass"),
                     parameters = mapOf(
-                        "nullableInt" to KotlinSerializerParameter(
+                        "nullableInt" to KotlinSerializerStandardParameter(
                             typeName = Int::class.asClassName(),
                             isMarkedNullable = true
                         )
@@ -124,13 +125,11 @@ class CodeGenerationBasicTest {
             }
 
             public fun JsonReader.nextMyClass(): MyClass {
-                var nullableIntFound = false
                 var nullableInt: Int? = null
                 beginObject()
                 while (hasNext()) {
                     when(nextName().lowercase()) {
                         "nullableint" -> {
-                            nullableIntFound = true
                             nullableInt = nextOrNull(JsonReader::nextInt)
                         }
                         else -> { skipValue() }
@@ -152,7 +151,7 @@ class CodeGenerationBasicTest {
         val info = KotlinSerializerInfo(
             constructors = listOf(
                 KotlinSerializerConstructorInfo(
-                    name = ClassName("com.example","MyEnum"),
+                    name = ClassName("com.example", "MyEnum"),
                     isEnum = true
                 )
             )
@@ -174,7 +173,7 @@ class CodeGenerationBasicTest {
 
             public fun JsonReader.nextMyEnum(): MyEnum {
                 val enumString = nextString()
-                return MyEnum.values().firstOrNull { it.name.equals(enumString, ignoreCase = true) } ?:
+                return MyEnum.entries.firstOrNull { it.name.equals(enumString, ignoreCase = true) } ?:
                         error("enumValue '${'$'}enumString' not found")
             }
             
@@ -187,10 +186,10 @@ class CodeGenerationBasicTest {
         val info = KotlinSerializerInfo(
             constructors = listOf(
                 KotlinSerializerConstructorInfo(
-                    name = ClassName("com.example.packageA","MyHolder"),
+                    name = ClassName("com.example.packageA", "MyHolder"),
                     parameters = mapOf(
-                        "child" to KotlinSerializerParameter(
-                            typeName = ClassName("com.example.packageB","MyHoldee")
+                        "child" to KotlinSerializerStandardParameter(
+                            typeName = ClassName("com.example.packageB", "MyHoldee")
                         )
                     )
                 )

@@ -1,5 +1,7 @@
 package com.fab1an.kotlinjsonstream.serializer
 
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerCollectionParameter
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import org.junit.jupiter.api.Test
@@ -13,11 +15,11 @@ class CodeGenerationCircularTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyLeaf"),
                     parameters = mapOf(
-                        "parent" to KotlinSerializerParameter(
+                        "parent" to KotlinSerializerStandardParameter(
                             isParentRef = true,
                             typeName = ClassName("com.example", "MyRoot")
                         ),
-                        "leafData" to KotlinSerializerParameter(
+                        "leafData" to KotlinSerializerStandardParameter(
                             typeName = Int::class.asClassName()
                         )
                     )
@@ -25,7 +27,7 @@ class CodeGenerationCircularTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyRoot"),
                     parameters = mapOf(
-                        "myLeaf" to KotlinSerializerParameter(
+                        "myLeaf" to KotlinSerializerStandardParameter(
                             needsParentRef = true,
                             typeName = ClassName("com.example", "MyLeaf"),
                             isMarkedNullable = true
@@ -97,13 +99,11 @@ class CodeGenerationCircularTest {
             }
 
             public fun JsonReader.nextMyRoot(): MyRoot {
-                var myLeafFound = false
                 var myLeaf: ((MyRoot) -> MyLeaf)? = null
                 beginObject()
                 while (hasNext()) {
                     when(nextName().lowercase()) {
                         "myleaf" -> {
-                            myLeafFound = true
                             myLeaf = nextOrNull(JsonReader::nextMyLeaf)
                         }
                         else -> { skipValue() }
@@ -127,11 +127,11 @@ class CodeGenerationCircularTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyLeaf"),
                     parameters = mapOf(
-                        "parent" to KotlinSerializerParameter(
+                        "parent" to KotlinSerializerStandardParameter(
                             isParentRef = true,
                             typeName = ClassName("com.example", "MyRoot")
                         ),
-                        "leafData" to KotlinSerializerParameter(
+                        "leafData" to KotlinSerializerStandardParameter(
                             typeName = Int::class.asClassName()
                         )
                     )
@@ -139,13 +139,11 @@ class CodeGenerationCircularTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyRoot"),
                     parameters = mapOf(
-                        "myLeafs" to KotlinSerializerParameter(
+                        "myLeafs" to KotlinSerializerCollectionParameter(
                             typeName = List::class.asClassName(),
-                            arguments = listOf(
-                                KotlinSerializerParameter(
-                                    typeName = ClassName("com.example", "MyLeaf"),
-                                    needsParentRef = true
-                                )
+                            argument = KotlinSerializerStandardParameter(
+                                typeName = ClassName("com.example", "MyLeaf"),
+                                needsParentRef = true
                             )
                         )
                     )
@@ -249,7 +247,7 @@ class CodeGenerationCircularTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyLeaf"),
                     parameters = mapOf(
-                        "parent" to KotlinSerializerParameter(
+                        "parent" to KotlinSerializerStandardParameter(
                             isParentRef = true,
                             typeName = ClassName("com.example", "MyRoot")
                         )
@@ -258,13 +256,11 @@ class CodeGenerationCircularTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyRoot"),
                     parameters = mapOf(
-                        "leafSet" to KotlinSerializerParameter(
+                        "leafSet" to KotlinSerializerCollectionParameter(
                             typeName = Set::class.asClassName(),
-                            arguments = listOf(
-                                KotlinSerializerParameter(
-                                    typeName = ClassName("com.example", "MyLeaf"),
-                                    needsParentRef = true
-                                )
+                            argument = KotlinSerializerStandardParameter(
+                                typeName = ClassName("com.example", "MyLeaf"),
+                                needsParentRef = true
                             )
                         )
                     )

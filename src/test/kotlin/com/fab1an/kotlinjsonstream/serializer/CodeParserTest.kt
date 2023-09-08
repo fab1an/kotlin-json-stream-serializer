@@ -1,5 +1,7 @@
 package com.fab1an.kotlinjsonstream.serializer
 
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerCollectionParameter
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
 import com.squareup.kotlinpoet.asClassName
 import org.junit.jupiter.api.Test
 
@@ -25,18 +27,18 @@ class CodeParserTest {
 
         val stringField = constructors.first().parameters["stringField"]!!
         stringField.typeName.toString() shouldEqual "kotlin.String"
+        stringField as KotlinSerializerStandardParameter
         stringField.isMarkedNullable shouldEqual false
-        stringField.arguments shouldEqual emptyList()
 
         val intField = constructors.first().parameters["intField"]!!
         intField.typeName.toString() shouldEqual "kotlin.Int"
+        intField as KotlinSerializerStandardParameter
         intField.isMarkedNullable shouldEqual false
-        intField.arguments shouldEqual emptyList()
 
         val boolField = constructors.first().parameters["boolField"]!!
         boolField.typeName.toString() shouldEqual "kotlin.Boolean"
+        boolField as KotlinSerializerStandardParameter
         boolField.isMarkedNullable shouldEqual false
-        boolField.arguments shouldEqual emptyList()
     }
 
     @Test
@@ -75,27 +77,27 @@ class CodeParserTest {
             .constructors
 
         constructors.size shouldEqual 3
-        constructors[0].apply {
-            name.toString() shouldEqual "com.example.MyHolder"
-            parameters.size shouldEqual 1
+        constructors[0].let {
+            it.name.toString() shouldEqual "com.example.MyHolder"
+            it.parameters.size shouldEqual 1
 
-            parameters["data"]!!.apply {
-                typeName.toString() shouldEqual "com.example.packageA.MyHoldeeA"
+            it.parameters["data"]!!.let { parameter ->
+                parameter.typeName.toString() shouldEqual "com.example.packageA.MyHoldeeA"
             }
         }
 
-        constructors[1].apply {
-            name.toString() shouldEqual "com.example.packageA.MyHoldeeA"
-            parameters.size shouldEqual 1
+        constructors[1].let {
+            it.name.toString() shouldEqual "com.example.packageA.MyHoldeeA"
+            it.parameters.size shouldEqual 1
 
-            parameters["data"]!!.apply {
-                typeName.toString() shouldEqual "com.example.packageB.MyHoldeeB"
+            it.parameters["data"]!!.let { parameter ->
+                parameter.typeName.toString() shouldEqual "com.example.packageB.MyHoldeeB"
             }
         }
 
-        constructors[2].apply {
-            name.toString() shouldEqual "com.example.packageB.MyHoldeeB"
-            parameters.size shouldEqual 0
+        constructors[2].let {
+            it.name.toString() shouldEqual "com.example.packageB.MyHoldeeB"
+            it.parameters.size shouldEqual 0
         }
     }
 
@@ -173,8 +175,8 @@ class CodeParserTest {
 
         val nullableIntField = constructors.first().parameters["nullableIntField"]!!
         nullableIntField.typeName.toString() shouldEqual "kotlin.Int"
+        nullableIntField as KotlinSerializerStandardParameter
         nullableIntField.isMarkedNullable shouldEqual true
-        nullableIntField.arguments shouldEqual emptyList()
     }
 
     @Test
@@ -198,8 +200,8 @@ class CodeParserTest {
         otherField.typeName.toString() shouldEqual "com.example.SomethingOther"
         otherField.typeName.packageName shouldEqual "com.example"
         otherField.typeName.simpleName shouldEqual "SomethingOther"
+        otherField as KotlinSerializerStandardParameter
         otherField.isMarkedNullable shouldEqual false
-        otherField.arguments shouldEqual emptyList()
     }
 
     @Test
@@ -221,11 +223,11 @@ class CodeParserTest {
 
         val listField = constructors.first().parameters["listField"]!!
         listField.typeName.toString() shouldEqual "kotlin.collections.List"
-        listField.isMarkedNullable shouldEqual false
-        listField.arguments.size shouldEqual 1
-        listField.arguments[0].typeName.toString() shouldEqual "kotlin.String"
-        listField.arguments[0].isMarkedNullable shouldEqual false
-        listField.arguments[0].arguments shouldEqual emptyList()
+        listField as KotlinSerializerCollectionParameter
+
+        val listFieldArgument = listField.argument as KotlinSerializerStandardParameter
+        listFieldArgument.typeName.toString() shouldEqual "kotlin.String"
+        listFieldArgument.isMarkedNullable shouldEqual false
     }
 
     @Test
@@ -245,13 +247,14 @@ class CodeParserTest {
         constructors.first().isEnum shouldEqual false
         constructors.first().parameters.size shouldEqual 1
 
-        val listField = constructors.first().parameters["setField"]!!
-        listField.typeName.toString() shouldEqual "kotlin.collections.Set"
-        listField.isMarkedNullable shouldEqual false
-        listField.arguments.size shouldEqual 1
-        listField.arguments[0].typeName.toString() shouldEqual "kotlin.String"
-        listField.arguments[0].isMarkedNullable shouldEqual false
-        listField.arguments[0].arguments shouldEqual emptyList()
+        val setField = constructors.first().parameters["setField"]!!
+        setField.typeName.toString() shouldEqual "kotlin.collections.Set"
+        setField as KotlinSerializerCollectionParameter
+
+        val setFieldArgument = setField.argument
+        setFieldArgument as KotlinSerializerStandardParameter
+        setFieldArgument.typeName.toString() shouldEqual "kotlin.String"
+        setFieldArgument.isMarkedNullable shouldEqual false
     }
 
     @Test
@@ -462,18 +465,26 @@ class CodeParserTest {
         constructors.size shouldEqual 2
         constructors[0].name.toString() shouldEqual "com.example.MyRoot"
         constructors[0].parameters.size shouldEqual 1
-        constructors[0].parameters["list"]!!.typeName shouldEqual List::class.asClassName()
-        constructors[0].parameters["list"]!!.arguments.size shouldEqual 1
-        constructors[0].parameters["list"]!!.arguments[0].typeName.toString() shouldEqual "com.example.MyLeaf"
+        constructors[0].parameters["list"]!!.let {
+            it as KotlinSerializerCollectionParameter
+            it.typeName shouldEqual List::class.asClassName()
+            it.argument as KotlinSerializerStandardParameter
+            it.argument.typeName.toString() shouldEqual "com.example.MyLeaf"
+        }
 
         constructors[1].name.toString() shouldEqual "com.example.MyLeaf"
         constructors[1].parameters.size shouldEqual 2
         constructors[1].parameters["parent"]!!.typeName.toString() shouldEqual "com.example.MyRoot"
-        constructors[1].parameters["parent"]!!.isParentRef shouldEqual true
-        constructors[1].parameters["parent"]!!.arguments.size shouldEqual 0
-        constructors[1].parameters["leafData"]!!.typeName.toString() shouldEqual "kotlin.Int"
-        constructors[1].parameters["leafData"]!!.isParentRef shouldEqual false
-        constructors[1].parameters["leafData"]!!.arguments.size shouldEqual 0
+        constructors[1].parameters["parent"]!!.let {
+            it as KotlinSerializerStandardParameter
+            it.isParentRef shouldEqual true
+        }
+
+        constructors[1].parameters["leafData"]!!.let {
+            it as KotlinSerializerStandardParameter
+            it.typeName.toString() shouldEqual "kotlin.Int"
+            it.isParentRef shouldEqual false
+        }
     }
 
     @Test
@@ -500,27 +511,25 @@ class CodeParserTest {
         info.constructors[0].apply {
             name.toString() shouldEqual "com.example.MyRoot"
             parameters.size shouldEqual 1
-            parameters["list"]!!.apply {
-                isCollection shouldEqual true
-                typeName shouldEqual List::class.asClassName()
-                arguments.size shouldEqual 1
-                arguments[0].apply {
-                    typeName.toString() shouldEqual "com.example.MyLeaf"
-                    needsParentRef shouldEqual true
-                }
+            parameters["list"]!!.let {
+                it.isCollection shouldEqual true
+                it.typeName shouldEqual List::class.asClassName()
+                it as KotlinSerializerCollectionParameter
+                val argument = it.argument as KotlinSerializerStandardParameter
+                argument.typeName.toString() shouldEqual "com.example.MyLeaf"
+                argument.needsParentRef shouldEqual true
             }
         }
 
         info.constructors[1].apply {
             name.toString() shouldEqual "com.example.MyLeaf"
             parameters.size shouldEqual 2
-            parameters["parent"]!!.apply {
-                typeName.toString() shouldEqual "com.example.MyRoot"
-                isParentRef shouldEqual true
+            parameters["parent"]!!.let {
+                it.typeName.toString() shouldEqual "com.example.MyRoot"
+                it as KotlinSerializerStandardParameter
+                it.isParentRef shouldEqual true
             }
-            parameters["leafData"]!!.apply {
-                typeName shouldEqual Int::class.asClassName()
-            }
+            parameters["leafData"]!!.typeName shouldEqual Int::class.asClassName()
         }
     }
 }

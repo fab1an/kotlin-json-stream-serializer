@@ -27,7 +27,8 @@ class ApplyPluginTest {
     @Test
     fun testHelloWorldTask() {
         settingsFile.writeText("rootProject.name = 'hello-world'")
-        buildFile.writeText("""
+        buildFile.writeText(
+            """
             plugins {
                 id "org.jetbrains.kotlin.jvm" version "1.8.10"
                 id "com.fab1an.kotlin-json-stream-serializer" version "1.0.0-SNAPSHOT"

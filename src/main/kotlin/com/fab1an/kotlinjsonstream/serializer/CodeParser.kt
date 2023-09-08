@@ -1,5 +1,7 @@
 package com.fab1an.kotlinjsonstream.serializer
 
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerCollectionParameter
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 import kastree.ast.Node
@@ -133,7 +135,11 @@ internal class CodeParser {
             /* find types needing parent-ref */
             val typesNeedingParentRef = mutableListOf<ClassName>()
             constructors.forEach { constructor ->
-                if (constructor.parameters.values.any { it.isParentRef }) {
+                if (constructor.parameters
+                        .values
+                        .filterIsInstance<KotlinSerializerStandardParameter>()
+                        .any { it.isParentRef }
+                ) {
                     typesNeedingParentRef += constructor.name
                 }
             }
@@ -147,12 +153,13 @@ internal class CodeParser {
         }
 
         interfaces.forEachIndexed { index, interfaceInfo ->
-
             val neededParentRef: ClassName? =
                 constructors
                     .filter { it.name in interfaceInfo.implementations }
-                    .firstOrNull { constructorInfo -> constructorInfo.parameters.values.any { it.isParentRef } }
-                    ?.parameters?.values?.first { it.isParentRef }?.typeName
+                    .flatMap { it.parameters.values }
+                    .filterIsInstance<KotlinSerializerStandardParameter>()
+                    .firstOrNull { it.isParentRef }
+                    ?.typeName
 
             interfaces[index] = interfaceInfo.copy(commonNeededParentRef = neededParentRef)
         }
@@ -160,11 +167,16 @@ internal class CodeParser {
     }
 
     private fun setNeedsParentRef(typesNeedingParentRef: List<ClassName>, type: KotlinSerializerParameter) {
-        if (type.typeName in typesNeedingParentRef) {
-            type.needsParentRef = true
-        }
-        type.arguments.forEach {
-            setNeedsParentRef(typesNeedingParentRef, it)
+        when (type) {
+            is KotlinSerializerStandardParameter -> {
+                if (type.typeName in typesNeedingParentRef) {
+                    type.needsParentRef = true
+                }
+            }
+
+            is KotlinSerializerCollectionParameter -> {
+                setNeedsParentRef(typesNeedingParentRef, type.argument)
+            }
         }
     }
 
@@ -193,6 +205,7 @@ internal class CodeParser {
                     else -> ClassName(packageName, rawIdentifier)
                 }
             }
+
             else -> error(typeRefNode)
         }
     }
@@ -205,38 +218,46 @@ internal class CodeParser {
     ): KotlinSerializerParameter {
         when (typeRefNode) {
             is Node.TypeRef.Simple -> {
-                check(typeRefNode.pieces.size == 1) { "$typeRefNode has many pieces" }
+                check(typeRefNode.pieces.size == 1) { "$typeRefNode has more than one piece" }
                 val typeRefNodePiece = typeRefNode.pieces.single()
 
-                val arguments = mutableListOf<KotlinSerializerParameter>()
-
-                val parameterType = resolveTypeName(packageName, imports, typeRefNode)
-                when {
-                    parameterType == List::class.asClassName() -> {
-                        arguments += typeRefNodePiece.typeParams.mapNotNull {
-                            parseType(packageName, imports, it!!.ref, false)
-                        }
+                when (val parameterType = resolveTypeName(packageName, imports, typeRefNode)) {
+                    List::class.asClassName(), Set::class.asClassName() -> {
+                        check(!isParentRef) { "$typeRefNode collectionType cannot be parent-reference" }
+                        return KotlinSerializerCollectionParameter(
+                            typeName = parameterType,
+                            argument = parseType(
+                                packageName,
+                                imports,
+                                typeRefNodePiece.typeParams.single()!!.ref,
+                                false
+                            )
+                        )
                     }
 
-                    parameterType == Set::class.asClassName() -> {
-                        arguments += typeRefNodePiece.typeParams.mapNotNull {
-                            parseType(packageName, imports, it!!.ref, false)
-                        }
+                    else -> {
+                        return KotlinSerializerStandardParameter(
+                            isMarkedNullable = false,
+                            typeName = parameterType,
+                            isParentRef = isParentRef,
+                            needsParentRef = false // set later
+                        )
                     }
                 }
+            }
 
-                return KotlinSerializerParameter(
-                    isMarkedNullable = false,
-                    typeName = parameterType,
-                    arguments = arguments,
-                    isParentRef = isParentRef,
-                    needsParentRef = false // set later
-                )
-            }
             is Node.TypeRef.Nullable -> {
-                return parseType(packageName, imports, typeRefNode.type, isParentRef)
-                    .copy(isMarkedNullable = true)
+                when (val kotlinSerializerParameter = parseType(packageName, imports, typeRefNode.type, isParentRef)) {
+                    is KotlinSerializerStandardParameter -> {
+                        return kotlinSerializerParameter.copy(isMarkedNullable = true)
+                    }
+
+                    is KotlinSerializerCollectionParameter -> {
+                        error("$kotlinSerializerParameter is a collection therefore it cannot be nullable")
+                    }
+                }
             }
+
             else -> error(typeRefNode)
         }
     }

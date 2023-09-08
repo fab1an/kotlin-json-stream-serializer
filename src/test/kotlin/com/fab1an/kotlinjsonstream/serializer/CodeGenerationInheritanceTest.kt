@@ -1,5 +1,6 @@
 package com.fab1an.kotlinjsonstream.serializer
 
+import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
 import com.squareup.kotlinpoet.ClassName
 import org.junit.jupiter.api.Test
 
@@ -12,7 +13,7 @@ class CodeGenerationInheritanceTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "MyHolder"),
                     parameters = mapOf(
-                        "obj" to KotlinSerializerParameter(
+                        "obj" to KotlinSerializerStandardParameter(
                             typeName = ClassName("com.example", "MyInterface")
                         )
                     )
@@ -65,8 +66,7 @@ class CodeGenerationInheritanceTest {
             
             public fun JsonReader.nextMyInterface(): MyInterface {
                 beginArray()
-                val type = nextString()
-                val obj = when (type) {
+                val obj = when (val type = nextString()) {
                     "com.example.MyHoldeeA" -> nextMyHoldeeA()
                     "com.example.MyHoldeeB" -> nextMyHoldeeB()
                     else -> error("unknown type ${'$'}type")
@@ -85,7 +85,7 @@ class CodeGenerationInheritanceTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "Parent"),
                     parameters = mapOf(
-                        "child" to KotlinSerializerParameter(
+                        "child" to KotlinSerializerStandardParameter(
                             typeName = ClassName("com.example", "MyInterface"),
                             needsParentRef = true,
                             isMarkedNullable = true
@@ -95,7 +95,7 @@ class CodeGenerationInheritanceTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "InterfaceImplA"),
                     parameters = mapOf(
-                        "parent" to KotlinSerializerParameter(
+                        "parent" to KotlinSerializerStandardParameter(
                             typeName = ClassName("com.example", "Parent"),
                             isParentRef = true
                         )
@@ -104,7 +104,7 @@ class CodeGenerationInheritanceTest {
                 KotlinSerializerConstructorInfo(
                     name = ClassName("com.example", "InterfaceImplB"),
                     parameters = mapOf(
-                        "parent" to KotlinSerializerParameter(
+                        "parent" to KotlinSerializerStandardParameter(
                             typeName = ClassName("com.example", "Parent"),
                             isParentRef = true
                         )
@@ -152,8 +152,7 @@ class CodeGenerationInheritanceTest {
             
             public fun JsonReader.nextMyInterface(): (Parent) -> MyInterface {
                 beginArray()
-                val type = nextString()
-                val obj = when (type) {
+                val obj = when (val type = nextString()) {
                     "com.example.InterfaceImplA" -> nextInterfaceImplA()
                     "com.example.InterfaceImplB" -> nextInterfaceImplB()
                     else -> error("unknown type ${'$'}type")

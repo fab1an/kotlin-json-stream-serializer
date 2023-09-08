@@ -1,6 +1,7 @@
 package com.fab1an.kotlinjsonstream.serializer
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
@@ -15,13 +16,13 @@ import javax.inject.Inject
 
 @CacheableTask
 internal open class GenerateSerializersTask @Inject constructor(
-    @InputDirectory
-    @SkipWhenEmpty
-    @PathSensitive(value = PathSensitivity.NAME_ONLY)
+    @get:InputDirectory
+    @get:SkipWhenEmpty
+    @get:PathSensitive(value = PathSensitivity.NAME_ONLY)
     val inputDir: Path,
 
-    @OutputDirectory
-    val outputDir: Path
+    @get:OutputDirectory
+    val outputDir: Provider<Path>
 ) : DefaultTask() {
 
     @TaskAction
@@ -37,7 +38,7 @@ internal open class GenerateSerializersTask @Inject constructor(
                     }
             )
 
-            SerializationFileWriter(outputDir).write(info)
+            SerializationFileWriter(outputDir.get()).write(info)
         }
     }
 }

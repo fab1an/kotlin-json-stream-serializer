@@ -8,7 +8,7 @@ import java.nio.file.Paths
 
 class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
 
-    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.1.1-SNAPSHOT"
+    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.1.0"
     private val kotlinStreamSerializerAnnotationDependency =
         "com.fab1an:kotlin-json-stream-serializer-annotations:1.0.0-SNAPSHOT"
 
@@ -47,7 +47,10 @@ class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
 
     private fun configureSourceSet(project: Project, sourceSet: KotlinSourceSet) {
         val inputSrcDir = Paths.get("${project.rootDir}/src/${sourceSet.name}/kotlin")
-        val outputSrcDir = Paths.get("${project.buildDir}/generated/source/kotlin-serializers/${sourceSet.name}/kotlin")
+
+        val outputSrcDirProvider = project.layout.buildDirectory
+            .dir("generated/source/kotlin-serializers/${sourceSet.name}/kotlin")
+            .map { it.asFile.toPath() }
 
         val taskName = when {
             sourceSet.name == "main" -> {
@@ -67,7 +70,7 @@ class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
             }
         }
 
-        project.tasks.register(taskName, GenerateSerializersTask::class.java, inputSrcDir, outputSrcDir)
+        project.tasks.register(taskName, GenerateSerializersTask::class.java, inputSrcDir, outputSrcDirProvider)
         sourceSet.kotlin.srcDir(project.tasks.named(taskName).map { it.outputs.files })
     }
 }
