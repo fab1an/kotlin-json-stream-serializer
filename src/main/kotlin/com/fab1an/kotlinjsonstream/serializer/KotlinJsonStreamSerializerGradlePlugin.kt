@@ -8,11 +8,11 @@ import java.nio.file.Paths
 
 class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
 
-    private val kotlinJsonStreamVersion = "1.1.1"
+    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:1.1.1"
 
-    private val kotlinJsonStreamDependency = "com.fab1an:kotlin-json-stream:$kotlinJsonStreamVersion"
+    // MUST BE VERSION OF THIS LIBRARY
     private val kotlinStreamSerializerAnnotationDependency =
-        "com.fab1an:kotlin-json-stream-serializer-annotations:$kotlinJsonStreamVersion"
+        "com.fab1an:kotlin-json-stream-serializer-annotations:1.0.3"
 
     override fun apply(project: Project) {
 
