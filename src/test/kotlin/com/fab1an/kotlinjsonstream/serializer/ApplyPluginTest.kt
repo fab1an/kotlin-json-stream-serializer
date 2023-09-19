@@ -30,8 +30,8 @@ class ApplyPluginTest {
         buildFile.writeText(
             """
             plugins {
-                id "org.jetbrains.kotlin.jvm" version "1.8.10"
-                id "com.fab1an.kotlin-json-stream-serializer" version "1.0.0-SNAPSHOT"
+                id "org.jetbrains.kotlin.jvm" version "1.9.10"
+                id "com.fab1an.kotlin-json-stream-serializer" version "1.0.4-SNAPSHOT"
             }
 
             repositories {

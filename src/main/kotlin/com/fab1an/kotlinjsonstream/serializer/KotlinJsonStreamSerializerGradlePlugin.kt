@@ -12,7 +12,7 @@ class KotlinJsonStreamSerializerGradlePlugin : Plugin<Project> {
 
     // MUST BE VERSION OF THIS LIBRARY
     private val kotlinStreamSerializerAnnotationDependency =
-        "com.fab1an:kotlin-json-stream-serializer-annotations:1.0.3"
+        "com.fab1an:kotlin-json-stream-serializer-annotations:1.0.4-SNAPSHOT"
 
     override fun apply(project: Project) {
 
