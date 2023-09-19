@@ -18,7 +18,7 @@ import javax.inject.Inject
 internal open class GenerateSerializersTask @Inject constructor(
     @get:InputDirectory
     @get:SkipWhenEmpty
-    @get:PathSensitive(value = PathSensitivity.NAME_ONLY)
+    @get:PathSensitive(value = PathSensitivity.RELATIVE)
     val inputDir: Path,
 
     @get:OutputDirectory
