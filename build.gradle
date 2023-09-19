@@ -27,6 +27,10 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
 }
 
+processResources {
+    expand(project.properties)
+}
+
 test {
     useJUnitPlatform()
 }

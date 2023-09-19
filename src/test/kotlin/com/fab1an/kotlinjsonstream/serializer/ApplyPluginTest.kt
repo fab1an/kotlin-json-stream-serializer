@@ -31,7 +31,7 @@ class ApplyPluginTest {
             """
             plugins {
                 id "org.jetbrains.kotlin.jvm" version "1.9.10"
-                id "com.fab1an.kotlin-json-stream-serializer" version "1.0.4-SNAPSHOT"
+                id "com.fab1an.kotlin-json-stream-serializer" version "${BuildInfo.VERSION}"
             }
 
             repositories {
