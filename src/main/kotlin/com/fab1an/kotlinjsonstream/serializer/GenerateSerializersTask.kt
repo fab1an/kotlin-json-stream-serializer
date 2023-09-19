@@ -34,8 +34,19 @@ internal open class GenerateSerializersTask @Inject constructor(
                 pathList
                     .filter { Files.isRegularFile(it) && it.toString().endsWith(".kt") }
                     .map {
-                        Files.readString(it)
+                        it to Files.readString(it)
                     }
+                    .filter {
+                        if ("::class" in it.second) {
+                            println("[kotlin-serializers] skipping ${inputDir.relativize(it.first)} because it contains ::class, which is unsupported")
+                            false
+                        } else
+                            true
+                    }
+                    .map {
+                        it.second
+                    }
+
             )
 
             SerializationFileWriter(outputDir.get()).write(info)
