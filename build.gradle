@@ -28,7 +28,11 @@ dependencies {
 }
 
 processResources {
-    expand(project.properties)
+    def expandProps = ["version": version]
+    inputs.properties(expandProps)
+    filesMatching('**/build.properties') {
+        expand(expandProps)
+    }
 }
 
 test {
