@@ -5,14 +5,16 @@ plugins {
 apply plugin: "org.jetbrains.kotlin.multiplatform"
 
 kotlin {
-    targetHierarchy.default()
     mingwX64()
-    ios()
+    iosArm64()
+    iosX64()
+    iosSimulatorArm64()
     macosArm64()
     macosX64()
     linuxX64()
+    linuxArm64()
     jvm {
-        jvmToolchain(17)
+        jvmToolchain(21)
         withJava()
         testRuns.named("test") {
             executionTask.configure {
@@ -23,4 +25,6 @@ kotlin {
     js(IR) {
         nodejs()
     }
+
+    applyDefaultHierarchyTemplate()
 }
