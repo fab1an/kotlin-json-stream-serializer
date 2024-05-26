@@ -1,6 +1,6 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.9.24" apply false
-    id 'org.jetbrains.kotlin.multiplatform' version "1.9.24" apply false
+    id "org.jetbrains.kotlin.jvm" version "2.0.0" apply false
+    id 'org.jetbrains.kotlin.multiplatform' version "2.0.0" apply false
     id "maven-publish"
     id "java-gradle-plugin"
 }
@@ -21,8 +21,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin"
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin-api"
     implementation "com.github.cretz.kastree:kastree-ast-psi:0.4.0"
-    implementation "com.squareup:kotlinpoet:1.16.0"
-    implementation "com.fab1an:kotlin-json-stream:1.2.0"
+    implementation "com.squareup:kotlinpoet:1.17.0"
+    implementation "com.fab1an:kotlin-json-stream:1.2.2-SNAPSHOT"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
 }

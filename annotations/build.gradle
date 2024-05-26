@@ -14,7 +14,6 @@ kotlin {
     linuxX64()
     linuxArm64()
     jvm {
-        jvmToolchain(21)
         withJava()
         testRuns.named("test") {
             executionTask.configure {
@@ -24,6 +23,10 @@ kotlin {
     }
     js(IR) {
         nodejs()
+    }
+
+    compilerOptions {
+        jvmToolchain(21)
     }
 
     applyDefaultHierarchyTemplate()
