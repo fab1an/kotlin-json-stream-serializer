@@ -37,9 +37,7 @@ class CodeGenerationCollectionsTest {
             )
         )
 
-        val serializerFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-
-        serializerFileSpecs[0].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[0]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -91,7 +89,7 @@ class CodeGenerationCollectionsTest {
             
         """.trimIndent()
 
-        serializerFileSpecs[1].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[1]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -141,9 +139,7 @@ class CodeGenerationCollectionsTest {
             )
         )
 
-        val serializerFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-
-        serializerFileSpecs.single().toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[0]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader

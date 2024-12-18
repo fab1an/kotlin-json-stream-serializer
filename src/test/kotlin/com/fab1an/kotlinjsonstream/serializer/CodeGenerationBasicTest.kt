@@ -29,7 +29,7 @@ class CodeGenerationBasicTest {
             )
         )
 
-        CodeGenerator().createSerializationFileSpecs(info).first().toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors.first()).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -106,7 +106,7 @@ class CodeGenerationBasicTest {
             )
         )
 
-        CodeGenerator().createSerializationFileSpecs(info).first().toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors.first()).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -157,7 +157,7 @@ class CodeGenerationBasicTest {
             )
         )
 
-        CodeGenerator().createSerializationFileSpecs(info).first().toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors.first()).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -173,8 +173,7 @@ class CodeGenerationBasicTest {
 
             public fun JsonReader.nextMyEnum(): MyEnum {
                 val enumString = nextString()
-                return MyEnum.entries.firstOrNull { it.name.equals(enumString, ignoreCase = true) } ?:
-                        error("enumValue '${'$'}enumString' not found")
+                return MyEnum.entries.firstOrNull { it.name.equals(enumString, ignoreCase = true) } ?: error("enumValue '${'$'}enumString' not found")
             }
             
         """.trimIndent()
@@ -196,8 +195,7 @@ class CodeGenerationBasicTest {
             )
         )
 
-        val serializerFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-        serializerFileSpecs[0].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors.first()).toString() shouldEqual """
             package com.example.packageA
 
             import com.example.packageB.MyHoldee

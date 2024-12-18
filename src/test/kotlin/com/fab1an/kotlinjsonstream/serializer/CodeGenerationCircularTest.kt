@@ -37,8 +37,7 @@ class CodeGenerationCircularTest {
             )
         )
 
-        val serializerFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-        serializerFileSpecs[0].toString() shouldEqual """
+       CodeGenerator().createConstructorSerializerFileSpec(info.constructors[0]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -81,7 +80,7 @@ class CodeGenerationCircularTest {
             
         """.trimIndent()
 
-        serializerFileSpecs[1].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[1]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -151,9 +150,7 @@ class CodeGenerationCircularTest {
             )
         )
 
-        val serializerFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-
-        serializerFileSpecs[0].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[0]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -196,7 +193,7 @@ class CodeGenerationCircularTest {
             
         """.trimIndent()
 
-        serializerFileSpecs[1].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[1]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -268,9 +265,7 @@ class CodeGenerationCircularTest {
             )
         )
 
-        val serializerFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-
-        serializerFileSpecs[0].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[0]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -300,10 +295,10 @@ class CodeGenerationCircularTest {
                 }
                 return obj
             }
-            
+
         """.trimIndent()
 
-        serializerFileSpecs[1].toString() shouldEqual """
+        CodeGenerator().createConstructorSerializerFileSpec(info.constructors[1]).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -343,7 +338,7 @@ class CodeGenerationCircularTest {
                 obj.leafSet = leafSet!!.map { it(obj) }.toSet()
                 return obj
             }
-            
+
         """.trimIndent()
     }
 }

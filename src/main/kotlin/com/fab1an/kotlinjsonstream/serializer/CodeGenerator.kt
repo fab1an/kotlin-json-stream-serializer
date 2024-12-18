@@ -15,34 +15,17 @@ import com.squareup.kotlinpoet.asClassName
 
 class CodeGenerator {
 
-    fun createSerializationFileSpecs(serializerInfo: KotlinSerializerInfo): List<FileSpec> {
-        val files = mutableListOf<FileSpec>()
-
-        /* create new files in correct package */
-        serializerInfo.constructors.forEach {
-            files += createConstructorSerializerFileSpec(it)
-        }
-
-        /* create interfaces */
-        serializerInfo.interfaces.forEach {
-            files += createInterfaceSerializerFileSpec(it, serializerInfo)
-        }
-
-        return files
-    }
-
-    private fun createInterfaceSerializerFileSpec(
-        interfaceInfo: KotlinSerializerInterfaceInfo,
-        serializerInfo: KotlinSerializerInfo
+    fun createInterfaceSerializerFileSpec(
+        interfaceInfo: KotlinSerializerInterfaceInfo
     ): FileSpec {
         return FileSpec.builder(interfaceInfo.name.packageName, interfaceInfo.name.simpleName + "Serialization")
             .addFunction(interfaceSerializer(interfaceInfo))
-            .addFunction(interfaceDeserializer(interfaceInfo.name, serializerInfo))
+            .addFunction(interfaceDeserializer(interfaceInfo))
             .indent("    ")
             .build()
     }
 
-    private fun createConstructorSerializerFileSpec(constructor: KotlinSerializerConstructorInfo): FileSpec {
+    fun createConstructorSerializerFileSpec(constructor: KotlinSerializerConstructorInfo): FileSpec {
         val className = constructor.name
 
         return FileSpec.builder(className.packageName, className.simpleName + "Serialization")
@@ -474,20 +457,18 @@ class CodeGenerator {
             .build()
     }
 
-    private fun interfaceDeserializer(interfaceName: ClassName, serializerInfo: KotlinSerializerInfo): FunSpec {
-        val interfaceInfo = serializerInfo.interfaces.first { it.name == interfaceName }
-
+    private fun interfaceDeserializer(interfaceInfo: KotlinSerializerInterfaceInfo): FunSpec {
         val returnType = if (interfaceInfo.commonNeededParentRef != null) {
             LambdaTypeName.get(
                 parameters = listOf(ParameterSpec("", interfaceInfo.commonNeededParentRef)),
-                returnType = interfaceName
+                returnType = interfaceInfo.name
             )
 
         } else {
-            interfaceName
+            interfaceInfo.name
         }
 
-        return FunSpec.builder("next${interfaceName.simpleName}")
+        return FunSpec.builder("next${interfaceInfo.name.simpleName}")
             .receiver(JsonReader::class)
             .returns(returnType)
             .addStatement("beginArray()")

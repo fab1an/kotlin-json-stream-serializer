@@ -1,12 +1,15 @@
 package com.fab1an.kotlinjsonstream.serializer
 
 import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
+import com.google.devtools.ksp.symbol.KSFile
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
 
-data class KotlinSerializerInfo(
+class KotlinSerializerInfo(
     val constructors: List<KotlinSerializerConstructorInfo> = emptyList(),
-    val interfaces: List<KotlinSerializerInterfaceInfo> = emptyList()
+    val interfaces: List<KotlinSerializerInterfaceInfo> = emptyList(),
+    val typeToKSFileMap: Map<ClassName, List<KSFile>> = emptyMap(),
+    val aggregatingOutput: Map<ClassName, Boolean> = emptyMap(),
 )
 
 data class KotlinSerializerConstructorInfo(

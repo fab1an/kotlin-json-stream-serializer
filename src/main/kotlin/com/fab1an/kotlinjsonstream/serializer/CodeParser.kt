@@ -2,153 +2,134 @@ package com.fab1an.kotlinjsonstream.serializer
 
 import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerCollectionParameter
 import com.fab1an.kotlinjsonstream.serializer.KotlinSerializerParameter.KotlinSerializerStandardParameter
+import com.fab1an.kotlinjsonstream.serializer.annotations.ParentRef
+import com.google.devtools.ksp.getConstructors
+import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSDeclaration
+import com.google.devtools.ksp.symbol.KSFile
+import com.google.devtools.ksp.symbol.KSTypeReference
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asClassName
-import kastree.ast.Node
-import kastree.ast.psi.Parser
+import kotlin.collections.single
+import kotlin.sequences.filter
 
 internal class CodeParser {
 
-    fun parse(stringSource: String): KotlinSerializerInfo {
-        return parse(listOf(stringSource))
-    }
+    private val KSDeclaration.className: ClassName
+        get() = ClassName(packageName.asString(), simpleName.asString())
 
-    fun parse(sources: List<String>): KotlinSerializerInfo {
+    fun parse(annotatedWithSer: Sequence<KSClassDeclaration>): KotlinSerializerInfo {
         val constructors = mutableListOf<KotlinSerializerConstructorInfo>()
         val interfaces = mutableListOf<KotlinSerializerInterfaceInfo>()
         val kotlinSerInterfaceImplementations = mutableMapOf<ClassName, MutableList<ClassName>>()
 
-        sources.forEach { stringSource ->
-            val fileNode = Parser.parseFile(stringSource)
+        val typeToKSFileMap = mutableMapOf<ClassName, MutableList<KSFile>>()
+        val aggregatingOutput = mutableMapOf<ClassName, Boolean>()
 
-            /* get packageName */
-            val packageName = fileNode.pkg?.names?.joinToString(".") { it } ?: error("no package-name")
+        /* interfaces */
+        annotatedWithSer
+            .filter { it.classKind == ClassKind.INTERFACE }
+            .forEach { interfaceDeclaration ->
+                val interfaceClassName = interfaceDeclaration.className
 
-            /* get imports */
-            val imports = getImports(fileNode.imports).toMutableMap()
+                interfaces += KotlinSerializerInterfaceInfo(
+                    name = interfaceClassName,
+                    /* reference to other list */
+                    implementations = kotlinSerInterfaceImplementations.getOrPut(interfaceClassName, ::mutableListOf),
+                    commonNeededParentRef = null
+                )
 
-            /* add names in file to imports */
-            fileNode.decls
-                .mapNotNull { it as? Node.Decl.Structured }
-                .filter {
-                    it.form == Node.Decl.Structured.Form.CLASS
-                }
-                .map {
-                    ClassName(packageName, it.name)
-                }
-                .forEach {
-                    imports[it.simpleName] = it
-                }
-
-            /* get elements annotated with Ser */
-            val annotatedWithSer = fileNode.decls
-                .mapNotNull { it as? Node.Decl.Structured }
-                .filter { declaration ->
-                    declaration.mods
-                        .mapNotNull { it as? Node.Modifier.AnnotationSet }
-                        .any { annotationSet ->
-                            annotationSet.anns.any { it.names.singleOrNull() == "Ser" }
-                        }
-                }
-
-            /* interfaces */
-            annotatedWithSer
-                .filter { it.form == Node.Decl.Structured.Form.INTERFACE }
-                .forEach {
-                    val interfaceName = ClassName(packageName, it.name)
-
-                    if (kotlinSerInterfaceImplementations[interfaceName] == null) {
-                        kotlinSerInterfaceImplementations[interfaceName] = mutableListOf()
-                    }
-
-                    interfaces += KotlinSerializerInterfaceInfo(
-                        name = interfaceName,
-                        implementations = kotlinSerInterfaceImplementations[interfaceName]!!,
-                        commonNeededParentRef = null
-                    )
-                }
-
-            /* enums */
-            annotatedWithSer
-                .filter { it.form == Node.Decl.Structured.Form.ENUM_CLASS }
-                .forEach { declaration ->
-                    constructors += KotlinSerializerConstructorInfo(
-                        name = ClassName(packageName, declaration.name),
-                        parameters = emptyMap(),
-                        isEnum = true
-                    )
-                }
-
-            /* constructors */
-            annotatedWithSer
-                .filter { it.form == Node.Decl.Structured.Form.CLASS }
-                .forEach { declaration ->
-                    val className = ClassName(packageName, declaration.name)
-                    if (declaration.parents.isNotEmpty()) {
-                        declaration.parents
-                            .mapNotNull { it as? Node.Decl.Structured.Parent.Type }
-                            .forEach {
-                                val name = resolveTypeName(packageName, imports, it.type)
-                                if (kotlinSerInterfaceImplementations[name] == null) {
-                                    kotlinSerInterfaceImplementations[name] = mutableListOf()
-                                }
-                                kotlinSerInterfaceImplementations[name]?.add(className)
-                            }
-                    }
-
-                    val listOfConstructorParamLists: MutableList<List<Node.Decl.Func.Param>> = declaration.members
-                        .mapNotNull { it as? Node.Decl.Constructor }
-                        .map { it.params }
-                        .toMutableList()
-
-                    declaration.primaryConstructor?.let {
-                        listOfConstructorParamLists += it.params
-                    }
-
-                    if (listOfConstructorParamLists.isEmpty()) {
-                        listOfConstructorParamLists.add(emptyList())
-                    }
-
-                    val selectedConstructorParamList = listOfConstructorParamLists
-                        .maxBy { it.size }
-
-                    val kotlinSerTypes = mutableMapOf<String, KotlinSerializerParameter>()
-                    selectedConstructorParamList.forEach { param ->
-                        val isParentRef = param.anns.any { annotationSet ->
-                            annotationSet.anns.any { it.names.first() == "ParentRef" }
-                        }
-                        kotlinSerTypes += param.name to parseType(
-                            packageName,
-                            imports,
-                            param.type?.ref ?: error("param $param has no type"),
-                            isParentRef = isParentRef
-                        )
-                    }
-
-                    constructors += KotlinSerializerConstructorInfo(
-                        name = className,
-                        parameters = kotlinSerTypes,
-                        isEnum = false
-                    )
-                }
-
-            /* find types needing parent-ref */
-            val typesNeedingParentRef = mutableListOf<ClassName>()
-            constructors.forEach { constructor ->
-                if (constructor.parameters
-                        .values
-                        .filterIsInstance<KotlinSerializerStandardParameter>()
-                        .any { it.isParentRef }
-                ) {
-                    typesNeedingParentRef += constructor.name
-                }
+                typeToKSFileMap.getOrPut(interfaceClassName, ::mutableListOf).add(interfaceDeclaration.containingFile!!)
+                aggregatingOutput[interfaceClassName] = true
             }
 
-            /* add it to kotlinSer */
-            constructors.forEach { constructor ->
-                constructor.parameters.values.forEach { typeInfo ->
-                    setNeedsParentRef(typesNeedingParentRef, typeInfo)
+        /* enums */
+        annotatedWithSer
+            .filter { it.classKind == ClassKind.ENUM_CLASS }
+            .forEach { enumDeclaration ->
+                val enumClassName = enumDeclaration.className
+
+                constructors += KotlinSerializerConstructorInfo(
+                    name = enumClassName,
+                    parameters = emptyMap(),
+                    isEnum = true
+                )
+
+                typeToKSFileMap.getOrPut(enumClassName, ::mutableListOf).add(enumDeclaration.containingFile!!)
+                aggregatingOutput[enumClassName] = false
+            }
+
+        /* constructors */
+        annotatedWithSer
+            .filter { it.classKind == ClassKind.CLASS }
+            .forEach { classDeclaration ->
+                val className = classDeclaration.className
+
+                classDeclaration.superTypes
+                    .forEach { superType ->
+                        val superTypeName = superType.resolve().declaration.className
+
+                        kotlinSerInterfaceImplementations.getOrPut(superTypeName, ::mutableListOf)
+                            .add(className)
+                    }
+
+                val listOfConstructorParamLists = classDeclaration.getConstructors()
+                    .map { it.parameters }
+                    .toMutableList()
+
+                classDeclaration.primaryConstructor?.let {
+                    listOfConstructorParamLists += it.parameters
                 }
+
+                if (listOfConstructorParamLists.isEmpty()) {
+                    listOfConstructorParamLists.add(emptyList())
+                }
+
+                val selectedConstructorParamList = listOfConstructorParamLists
+                    .maxBy { it.size }
+
+                val kotlinSerTypes = mutableMapOf<String, KotlinSerializerParameter>()
+                selectedConstructorParamList.forEach { param ->
+                    val isParentRef =
+                        param.annotations.any { annotation ->
+                            annotation.annotationType.resolve().declaration.qualifiedName?.asString() ==
+                                    ParentRef::class.qualifiedName
+                        }
+
+                    kotlinSerTypes += param.name!!.asString() to parseType(
+                        param.type,
+                        isParentRef = isParentRef
+                    )
+                }
+
+                constructors += KotlinSerializerConstructorInfo(
+                    name = className,
+                    parameters = kotlinSerTypes,
+                    isEnum = false
+                )
+
+                typeToKSFileMap.getOrPut(className, ::mutableListOf)
+                    .add(classDeclaration.containingFile!!)
+                aggregatingOutput[className] = false
+            }
+
+        /* find types needing parent-ref */
+        val typesNeedingParentRef = mutableListOf<ClassName>()
+        constructors.forEach { constructor ->
+            if (constructor.parameters
+                    .values
+                    .filterIsInstance<KotlinSerializerStandardParameter>()
+                    .any { it.isParentRef }
+            ) {
+                typesNeedingParentRef += constructor.name
+            }
+        }
+
+        /* add it to kotlinSer */
+        constructors.forEach { constructor ->
+            constructor.parameters.values.forEach { typeInfo ->
+                setNeedsParentRef(typesNeedingParentRef, typeInfo)
             }
         }
 
@@ -163,7 +144,20 @@ internal class CodeParser {
 
             interfaces[index] = interfaceInfo.copy(commonNeededParentRef = neededParentRef)
         }
-        return KotlinSerializerInfo(constructors, interfaces)
+
+        interfaces.forEach { interfaceInfo ->
+            interfaceInfo.implementations.forEach { implementation ->
+                typeToKSFileMap.getOrPut(interfaceInfo.name, ::mutableListOf)
+                    .add(typeToKSFileMap.getValue(implementation).single())
+            }
+        }
+
+        return KotlinSerializerInfo(
+            constructors,
+            interfaces,
+            typeToKSFileMap,
+            aggregatingOutput
+        )
     }
 
     private fun setNeedsParentRef(typesNeedingParentRef: List<ClassName>, type: KotlinSerializerParameter) {
@@ -180,98 +174,34 @@ internal class CodeParser {
         }
     }
 
-    private fun resolveTypeName(
-        packageName: String,
-        imports: Map<String, ClassName>,
-        typeRefNode: Node.TypeRef
-    ): ClassName {
-        when (typeRefNode) {
-            is Node.TypeRef.Simple -> {
-                check(typeRefNode.pieces.size == 1) { "$typeRefNode has many pieces" }
-                val rawIdentifier = typeRefNode.pieces.single().name
-                return when {
-                    "." in rawIdentifier -> ClassName(
-                        rawIdentifier.substringBeforeLast("."),
-                        rawIdentifier.substringAfterLast(".")
-                    )
-
-                    rawIdentifier in imports -> imports[rawIdentifier]!!
-                    rawIdentifier == "List" -> List::class.asClassName()
-                    rawIdentifier == "Set" -> Set::class.asClassName()
-                    rawIdentifier == "Int" -> Int::class.asClassName()
-                    rawIdentifier == "Boolean" -> Boolean::class.asClassName()
-                    rawIdentifier == "String" -> String::class.asClassName()
-                    rawIdentifier == "Double" -> Double::class.asClassName()
-                    else -> ClassName(packageName, rawIdentifier)
-                }
-            }
-
-            else -> error(typeRefNode)
-        }
-    }
-
     private fun parseType(
-        packageName: String,
-        imports: Map<String, ClassName>,
-        typeRefNode: Node.TypeRef,
+        ksTypeRef: KSTypeReference,
         isParentRef: Boolean
     ): KotlinSerializerParameter {
-        when (typeRefNode) {
-            is Node.TypeRef.Simple -> {
-                check(typeRefNode.pieces.size == 1) { "$typeRefNode has more than one piece" }
-                val typeRefNodePiece = typeRefNode.pieces.single()
+        val parameterTypeName = ksTypeRef.resolve().declaration.className
 
-                when (val parameterType = resolveTypeName(packageName, imports, typeRefNode)) {
-                    List::class.asClassName(), Set::class.asClassName() -> {
-                        check(!isParentRef) { "$typeRefNode collectionType cannot be parent-reference" }
-                        return KotlinSerializerCollectionParameter(
-                            typeName = parameterType,
-                            argument = parseType(
-                                packageName,
-                                imports,
-                                typeRefNodePiece.typeParams.single()!!.ref,
-                                false
-                            )
-                        )
-                    }
-
-                    else -> {
-                        return KotlinSerializerStandardParameter(
-                            isMarkedNullable = false,
-                            typeName = parameterType,
-                            isParentRef = isParentRef,
-                            needsParentRef = false // set later
-                        )
-                    }
-                }
+        when (parameterTypeName) {
+            List::class.asClassName(), Set::class.asClassName() -> {
+                check(!isParentRef) { "$ksTypeRef collectionType cannot be parent-reference" }
+                check(!ksTypeRef.resolve().isMarkedNullable) { "$ksTypeRef collectionType cannot be nullable" }
+                return KotlinSerializerCollectionParameter(
+                    typeName = parameterTypeName,
+                    argument = parseType(
+                        ksTypeRef.resolve().arguments.single().type!!,
+                        false
+                    )
+                )
             }
 
-            is Node.TypeRef.Nullable -> {
-                when (val kotlinSerializerParameter = parseType(packageName, imports, typeRefNode.type, isParentRef)) {
-                    is KotlinSerializerStandardParameter -> {
-                        return kotlinSerializerParameter.copy(isMarkedNullable = true)
-                    }
-
-                    is KotlinSerializerCollectionParameter -> {
-                        error("$kotlinSerializerParameter is a collection therefore it cannot be nullable")
-                    }
-                }
+            else -> {
+                return KotlinSerializerStandardParameter(
+                    isMarkedNullable = ksTypeRef.resolve().isMarkedNullable,
+                    typeName = parameterTypeName,
+                    isParentRef = isParentRef,
+                    needsParentRef = false // set later
+                )
             }
-
-            else -> error(typeRefNode)
         }
-    }
-
-    private fun getImports(imports: List<Node.Import>): Map<String, ClassName> {
-        return imports
-            .filterNot { it.wildcard }
-            .associate { import ->
-                val joined = import.names.joinToString(".")
-                val className = joined.substringAfterLast(".")
-                val packageName = joined.substringBeforeLast(".")
-
-                className to ClassName(packageName, className)
-            }
     }
 }
 

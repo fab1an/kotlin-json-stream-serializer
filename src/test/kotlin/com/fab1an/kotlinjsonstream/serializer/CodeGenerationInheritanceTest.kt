@@ -37,8 +37,7 @@ class CodeGenerationInheritanceTest {
             )
         )
 
-        val serializationFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-        serializationFileSpecs[3].toString() shouldEqual """
+        CodeGenerator().createInterfaceSerializerFileSpec(info.interfaces.single()).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
@@ -123,8 +122,7 @@ class CodeGenerationInheritanceTest {
             )
         )
 
-        val serializationFileSpecs = CodeGenerator().createSerializationFileSpecs(info)
-        serializationFileSpecs[3].toString() shouldEqual """
+        CodeGenerator().createInterfaceSerializerFileSpec(info.interfaces.single()).toString() shouldEqual """
             package com.example
 
             import com.fab1an.kotlinjsonstream.JsonReader
