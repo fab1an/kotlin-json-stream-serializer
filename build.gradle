@@ -6,7 +6,7 @@ plugins {
 
 allprojects {
     group 'com.fab1an'
-    version '1.0.8-SNAPSHOT'
+    version '2.0.0'
 
     repositories {
         mavenCentral()
