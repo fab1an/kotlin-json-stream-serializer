@@ -1,4 +1,0 @@
-rootProject.name="kotlin-json-stream-serializer"
-include ":annotations"
-project(":annotations").name = "kotlin-json-stream-serializer-annotations"
-
