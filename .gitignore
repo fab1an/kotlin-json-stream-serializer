@@ -1,7 +1,9 @@
-/TODO.txt
 build
+secring.gpg
 .gradle
 .DS_Store
 .idea
 *.swp
-/.kotlin
+local.properties
+TODO.txt
+.kotlin
