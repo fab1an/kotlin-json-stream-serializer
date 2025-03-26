@@ -15,8 +15,3 @@ updates:
     schedule:
       interval: "monthly"
 
-  - package-ecosystem: npm
-    directory: /kotlin-js-store
-    schedule:
-      interval: "monthly"
-      
