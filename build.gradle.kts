@@ -8,7 +8,6 @@ version = "2.0.4-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
