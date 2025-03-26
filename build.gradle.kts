@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm").version("2.1.10")
     id("publishing-conventions")
-    id("maven-publish")
 }
 
 group = "com.fab1an"
@@ -27,6 +26,10 @@ tasks.test {
 
 kotlin {
     jvmToolchain(21)
+}
+
+java {
+    withSourcesJar()
 }
 
 publishing {
