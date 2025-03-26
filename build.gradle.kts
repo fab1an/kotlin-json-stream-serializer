@@ -1,10 +1,11 @@
 plugins {
     kotlin("jvm").version("2.1.10")
+    id("publishing-conventions")
     id("maven-publish")
 }
 
 group = "com.fab1an"
-version = "2.0.4-SNAPSHOT"
+version = "2.0.4"
 
 repositories {
     mavenCentral()
