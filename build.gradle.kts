@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.fab1an"
-version = "2.0.4"
+version = "2.0.5-SNAPSHOT"
 
 repositories {
     mavenCentral()
