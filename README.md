@@ -5,3 +5,4 @@
 [![license](https://img.shields.io/github/license/fab1an/kotlin-json-stream-serializer)](https://github.com/fab1an/kotlin-json-stream-serializer/blob/master/LICENSE)
 [![build status](https://github.com/fab1an/kotlin-json-stream-serializer/actions/workflows/build-master.yml/badge.svg)](https://github.com/fab1an/kotlin-json-stream-serializer/actions/workflows/build-master.yml)
 [![OpenSSF ScoreCard](https://img.shields.io/ossf-scorecard/github.com/fab1an/kotlin-json-stream-serializer)](https://scorecard.dev/)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10362/badge)](https://www.bestpractices.dev/projects/10362)
