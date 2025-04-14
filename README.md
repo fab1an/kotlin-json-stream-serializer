@@ -1,4 +1,4 @@
-# kotlin-json-stream-serializer
+# Kotlin JSON stream serializer - Compile-time generated Kotlin Multiplatform JSON stream serialization
 
 [![maven central version](https://img.shields.io/maven-central/v/com.fab1an/kotlin-json-stream-serializer)](https://mvnrepository.com/artifact/com.fab1an/kotlin-json-stream-serializer)
 [![semver](https://img.shields.io/:semver-%E2%9C%93-brightgreen.svg)](http://semver.org/)
@@ -10,9 +10,9 @@
 
 ## Introduction
 
-Kotlin-json-stream-serializer is a [KSP](https://github.com/google/ksp) plugin, that allows you to annotate certain classes and have JSON serialization/deserialization functions generated for them at compile-time.
+Kotlin JSON stream serializer is a [KSP](https://github.com/google/ksp) plugin, that allows you to annotate certain classes and have JSON serialization/deserialization functions generated for them at compile-time.
 
-**Sample**: For a sample project go to [kotlin-json-stream-sample](https://github.com/fab1an/kotlin-json-stream-sample).
+**Sample**: For a sample project go to [kotlin-json-stream-serializer-sample](https://github.com/fab1an/kotlin-json-stream-serializer-sample).
 
 ## Setup
 
@@ -97,16 +97,16 @@ To support custom types you need to create two extension functions in the same p
 
 ### Polymorphism
 
-Polymorphism is supported automatically when you annotated an interface using `@Ser`. The plugin will find all implementations and write it's type and data into an array during serialization and use it during deserialization.
+Polymorphism is supported automatically when you annotate an interface using `@Ser`. The plugin will find all implementations and write their type and data into an array during serialization and use it during deserialization.
 
 ### Circular References
 
 To serialize and deserialize circular structures you need to
 
-* Annotate both parent and child object using `@Ser`.
-* Have the parent object passed into the child as constructor parameter and annotate it using `@ParentRef`.
-* Have the child object stored in the parent object either in a variable `List` or a nullable parameter.
+* Annotate both parent and child objects using `@Ser`.
+* Have the parent object passed into the child as a constructor parameter and annotate it using `@ParentRef`.
+* Have the child object stored in the parent object in a variable `List` or a nullable parameter.
 
 ### Caveats
 
-* ENUMs and field-names are *deserialized* case-insensitively, they are serialized with their original case.
+* ENUMs and field names are *deserialized* case-insensitively, they are serialized with their original case.
