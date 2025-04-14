@@ -12,7 +12,7 @@
 
 Kotlin-json-stream-serializer is a [KSP](https://github.com/google/ksp) plugin, that allows you to annotate certain classes and have JSON serialization/deserialization functions generated for them at compile-time.
 
-**Sample**: For a sample project go to [kotlin-json-stream-sample](https://github.com/fab1an/kotlin-json-stream-sample).
+**Sample**: For a sample project go to [kotlin-json-stream-serializer-sample](https://github.com/fab1an/kotlin-json-stream-serializer-sample).
 
 ## Setup
 
