@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.devtools.ksp:symbol-processing-api:2.1.20-2.0.0")
+    implementation("com.google.devtools.ksp:symbol-processing-api:2.1.20-2.0.1")
     implementation("com.fab1an:kotlin-json-stream-serializer-annotations:2.0.1")
     implementation("com.squareup:kotlinpoet:2.1.0")
     implementation("com.fab1an:kotlin-json-stream:1.2.3")
