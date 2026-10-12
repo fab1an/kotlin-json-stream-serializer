@@ -36,7 +36,8 @@ internal class CodeParser {
                 interfaces += KotlinSerializerInterfaceInfo(
                     name = interfaceClassName,
                     /* reference to other list */
-                    implementations = kotlinSerInterfaceImplementations.getOrPut(interfaceClassName, ::mutableListOf),
+                    implementations = kotlinSerInterfaceImplementations
+                        .getOrPut(interfaceClassName, ::mutableListOf),
                     commonNeededParentRef = null
                 )
 
@@ -153,8 +154,8 @@ internal class CodeParser {
         }
 
         return KotlinSerializerInfo(
-            constructors,
-            interfaces,
+            constructors.sortedBy { it.name },
+            interfaces.sortedBy { it.name },
             typeToKSFileMap,
             aggregatingOutput
         )

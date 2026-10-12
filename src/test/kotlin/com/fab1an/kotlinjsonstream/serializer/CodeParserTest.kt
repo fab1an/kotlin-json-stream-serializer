@@ -23,7 +23,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 1
         constructors.first().name.toString() shouldEqual "com.example.MyClass"
         constructors.first().parameters.size shouldEqual 3
@@ -81,12 +81,20 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser()
-            .parseSource(listOf(kotlinSourceA, kotlinSourceB, kotlinSourceC))
+        val constructors = parseSource(listOf(kotlinSourceA, kotlinSourceB, kotlinSourceC))
             .constructors
 
         constructors.size shouldEqual 3
         constructors[0].let {
+            it.name.toString() shouldEqual "com.example.MyHolder"
+            it.parameters.size shouldEqual 1
+
+            it.parameters["data"]!!.let { parameter ->
+                parameter.typeName.toString() shouldEqual "com.example.packageA.MyHoldeeA"
+            }
+        }
+
+        constructors[1].let {
             it.name.toString() shouldEqual "com.example.packageA.MyHoldeeA"
             it.parameters.size shouldEqual 1
 
@@ -95,19 +103,11 @@ class CodeParserTest {
             }
         }
 
-        constructors[1].let {
+        constructors[2].let {
             it.name.toString() shouldEqual "com.example.packageB.MyHoldeeB"
             it.parameters.size shouldEqual 0
         }
 
-        constructors[2].let {
-            it.name.toString() shouldEqual "com.example.MyHolder"
-            it.parameters.size shouldEqual 1
-
-            it.parameters["data"]!!.let { parameter ->
-                parameter.typeName.toString() shouldEqual "com.example.packageA.MyHoldeeA"
-            }
-        }
 
 
     }
@@ -136,8 +136,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser()
-            .parseSource(listOf(kotlinSourceA, kotlinSourceB))
+        val constructors = parseSource(listOf(kotlinSourceA, kotlinSourceB))
             .constructors
 
         constructors.size shouldEqual 2
@@ -168,7 +167,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 1
         constructors.first().name.toString() shouldEqual "com.example.MyEnum"
         constructors.first().isEnum shouldEqual true
@@ -188,7 +187,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 1
         constructors.first().name.toString() shouldEqual "com.example.MyClass"
         constructors.first().parameters.size shouldEqual 1
@@ -221,7 +220,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(listOf(kotlinSource1, kotlinSource2)).constructors
+        val constructors = parseSource(listOf(kotlinSource1, kotlinSource2)).constructors
         constructors.size shouldEqual 1
         constructors.first().name.toString() shouldEqual "com.example.MyClass"
         constructors.first().parameters.size shouldEqual 1
@@ -247,7 +246,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 1
         constructors.first().name.toString() shouldEqual "com.example.MyClass"
         constructors.first().isEnum shouldEqual false
@@ -275,7 +274,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 1
         constructors.first().name.toString() shouldEqual "com.example.MyClass"
         constructors.first().isEnum shouldEqual false
@@ -309,7 +308,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 2
         constructors[0].name.toString() shouldEqual "com.example.MyClass"
         constructors[0].isEnum shouldEqual false
@@ -333,7 +332,7 @@ class CodeParserTest {
         """
         )
 
-        val constructors = CodeParser().parseSource(kotlinSource).constructors
+        val constructors = parseSource(kotlinSource).constructors
         constructors.size shouldEqual 1
         constructors[0].name.toString() shouldEqual "com.example.MyClass"
         constructors[0].isEnum shouldEqual false
@@ -372,19 +371,19 @@ class CodeParserTest {
         """
         )
 
-        val results = CodeParser().parseSource(kotlinSource)
+        val results = parseSource(kotlinSource)
 
         val constructors = results.constructors
         constructors.size shouldEqual 3
-        constructors[0].name.toString() shouldEqual "com.example.MyHolder"
-        constructors[0].parameters.size shouldEqual 1
-        constructors[0].parameters["obj"]!!.typeName.toString() shouldEqual "com.example.MyInterface"
+        constructors[0].name.toString() shouldEqual "com.example.MyHoldeeA"
+        constructors[0].parameters.size shouldEqual 0
 
-        constructors[1].name.toString() shouldEqual "com.example.MyHoldeeA"
+        constructors[1].name.toString() shouldEqual "com.example.MyHoldeeB"
         constructors[1].parameters.size shouldEqual 0
 
-        constructors[2].name.toString() shouldEqual "com.example.MyHoldeeB"
-        constructors[2].parameters.size shouldEqual 0
+        constructors[2].name.toString() shouldEqual "com.example.MyHolder"
+        constructors[2].parameters.size shouldEqual 1
+        constructors[2].parameters["obj"]!!.typeName.toString() shouldEqual "com.example.MyInterface"
 
         val interfaces = results.interfaces
         interfaces.size shouldEqual 1
@@ -423,7 +422,7 @@ class CodeParserTest {
         """
         )
 
-        val info = CodeParser().parseSource(listOf(kotlinSourceA, kotlinSourceB))
+        val info = parseSource(listOf(kotlinSourceA, kotlinSourceB))
 
         info.constructors.size shouldEqual 2
         info.constructors[0].apply {
@@ -439,8 +438,8 @@ class CodeParserTest {
         info.interfaces[0].apply {
             name.toString() shouldEqual "com.example.packageA.MyInterface"
             implementations.size shouldEqual 2
-            implementations[0].toString() shouldEqual "com.example.packageA.MyInterfaceImplA"
-            implementations[1].toString() shouldEqual "com.example.packageB.MyInterfaceImplB"
+            implementations[0].toString() shouldEqual "com.example.packageB.MyInterfaceImplB"
+            implementations[1].toString() shouldEqual "com.example.packageA.MyInterfaceImplA"
         }
     }
 
@@ -468,8 +467,8 @@ class CodeParserTest {
         """
         )
 
-        val parseOrder1 =  CodeParser().parseSource(listOf(kotlinSourceA, kotlinSourceB))
-        val parseOrder2 =  CodeParser().parseSource(listOf(kotlinSourceB, kotlinSourceA))
+        val parseOrder1 = parseSource(listOf(kotlinSourceA, kotlinSourceB))
+        val parseOrder2 = parseSource(listOf(kotlinSourceB, kotlinSourceA))
 
         parseOrder1.interfaces shouldEqual parseOrder2.interfaces
         parseOrder1.constructors shouldEqual parseOrder2.constructors
@@ -490,7 +489,7 @@ class CodeParserTest {
         """
         )
 
-        val results = CodeParser().parseSource(kotlinSource)
+        val results = parseSource(kotlinSource)
 
         val constructors = results.constructors
         constructors.size shouldEqual 1
@@ -518,31 +517,32 @@ class CodeParserTest {
         """
         )
 
-        val results = CodeParser().parseSource(kotlinSource)
+        val results = parseSource(kotlinSource)
 
         val constructors = results.constructors
         constructors.size shouldEqual 2
-        constructors[0].name.toString() shouldEqual "com.example.MyRoot"
-        constructors[0].parameters.size shouldEqual 1
-        constructors[0].parameters["list"]!!.let {
-            it as KotlinSerializerCollectionParameter
-            it.typeName shouldEqual List::class.asClassName()
-            it.argument as KotlinSerializerStandardParameter
-            it.argument.typeName.toString() shouldEqual "com.example.MyLeaf"
-        }
 
-        constructors[1].name.toString() shouldEqual "com.example.MyLeaf"
-        constructors[1].parameters.size shouldEqual 2
-        constructors[1].parameters["parent"]!!.typeName.toString() shouldEqual "com.example.MyRoot"
-        constructors[1].parameters["parent"]!!.let {
+        constructors[0].name.toString() shouldEqual "com.example.MyLeaf"
+        constructors[0].parameters.size shouldEqual 2
+        constructors[0].parameters["parent"]!!.typeName.toString() shouldEqual "com.example.MyRoot"
+        constructors[0].parameters["parent"]!!.let {
             it as KotlinSerializerStandardParameter
             it.isParentRef shouldEqual true
         }
 
-        constructors[1].parameters["leafData"]!!.let {
+        constructors[0].parameters["leafData"]!!.let {
             it as KotlinSerializerStandardParameter
             it.typeName.toString() shouldEqual "kotlin.Int"
             it.isParentRef shouldEqual false
+        }
+
+        constructors[1].name.toString() shouldEqual "com.example.MyRoot"
+        constructors[1].parameters.size shouldEqual 1
+        constructors[1].parameters["list"]!!.let {
+            it as KotlinSerializerCollectionParameter
+            it.typeName shouldEqual List::class.asClassName()
+            it.argument as KotlinSerializerStandardParameter
+            it.argument.typeName.toString() shouldEqual "com.example.MyLeaf"
         }
     }
 
@@ -571,7 +571,7 @@ class CodeParserTest {
         """
         )
 
-        val info = CodeParser().parseSource(listOf(kotlinSourceA, kotlinSourceB))
+        val info = parseSource(listOf(kotlinSourceA, kotlinSourceB))
 
         info.constructors.size shouldEqual 2
         info.constructors[0].apply {
