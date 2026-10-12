@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm").version("2.1.10")
+    kotlin("jvm").version("2.4.21")
     id("publishing-conventions")
 }
 
@@ -11,13 +11,13 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.devtools.ksp:symbol-processing-api:2.1.20-2.0.1")
+    implementation("com.google.devtools.ksp:symbol-processing-api:2.3.12")
     implementation("com.fab1an:kotlin-json-stream-serializer-annotations:2.0.1")
-    implementation("com.squareup:kotlinpoet:2.1.0")
+    implementation("com.squareup:kotlinpoet:2.4.0")
     implementation("com.fab1an:kotlin-json-stream:1.2.3")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.6.0")
+    testImplementation("dev.zacsweers.kctfork:ksp:0.14.0")
 }
 
 tasks.test {
@@ -25,7 +25,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }
 
 java {
