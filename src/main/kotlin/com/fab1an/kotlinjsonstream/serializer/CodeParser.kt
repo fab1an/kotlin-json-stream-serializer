@@ -155,7 +155,10 @@ internal class CodeParser {
 
         return KotlinSerializerInfo(
             constructors.sortedBy { it.name },
-            interfaces.sortedBy { it.name },
+            interfaces.sortedBy { it.name }
+                .map {
+                    it.copy(implementations = it.implementations.sortedBy { it.canonicalName })
+                },
             typeToKSFileMap,
             aggregatingOutput
         )

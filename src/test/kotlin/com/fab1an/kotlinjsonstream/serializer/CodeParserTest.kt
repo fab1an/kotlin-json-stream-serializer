@@ -438,8 +438,8 @@ class CodeParserTest {
         info.interfaces[0].apply {
             name.toString() shouldEqual "com.example.packageA.MyInterface"
             implementations.size shouldEqual 2
-            implementations[0].toString() shouldEqual "com.example.packageB.MyInterfaceImplB"
-            implementations[1].toString() shouldEqual "com.example.packageA.MyInterfaceImplA"
+            implementations[0].toString() shouldEqual "com.example.packageA.MyInterfaceImplA"
+            implementations[1].toString() shouldEqual "com.example.packageB.MyInterfaceImplB"
         }
     }
 
