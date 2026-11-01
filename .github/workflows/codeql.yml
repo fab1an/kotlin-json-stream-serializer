@@ -101,7 +101,7 @@ jobs:
           cache: "gradle"
 
       - if: matrix.build-mode == 'manual'
-        uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5.0.0
+        uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - if: matrix.build-mode == 'manual'
         shell: bash
